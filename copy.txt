@@ -55,32 +55,40 @@ function BooksList() {
 
   // Display appropriate messages or render the list based on state
   return (
-    <View style={{ flex: 1 }}>
-      {error && <Text>Error: {error}</Text>}
-      {isLoading && <Text>Ładowanie książek...</Text>}
-      {!error && !isLoading && books.length === 0 && (
-        <Text>Brak książek w bazie danych</Text>
-      )}
-      {!error && !isLoading && books.length > 0 && (
-        <View style={{ padding: 20 }}>
-          <View style={styles.container}>
-            <Text style={styles.boldItem}>ID Book</Text>
-            <Text style={styles.boldItem}>Name</Text>
-            <Text style={styles.boldItem}>Price</Text>
+    <PullToRefresh
+      onRefresh={() => {
+        setIsLoading(true);
+        fetchData().then(() => setIsLoading(false));
+      }}
+      refreshing={isLoading}
+    >
+      <View style={{ flex: 1 }}>
+        {error && <Text>Error: {error}</Text>}
+        {isLoading && <Text>Ładowanie książek...</Text>}
+        {!error && !isLoading && books.length === 0 && (
+          <Text>Brak książek w bazie danych</Text>
+        )}
+        {!error && !isLoading && books.length > 0 && (
+          <View style={{ padding: 20 }}>
+            <View style={styles.container}>
+              <Text style={styles.boldItem}>ID Book</Text>
+              <Text style={styles.boldItem}>Name</Text>
+              <Text style={styles.boldItem}>Price</Text>
+            </View>
+            <FlatList
+              data={books}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.container}>
+                  <Text style={styles.item}>{item.id}</Text>
+                  <Text style={styles.item}>{item.name}</Text>
+                  <Text style={styles.item}>{item.price}</Text>
+                </View>
+              )} />
           </View>
-          <FlatList
-            data={books}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.container}>
-                <Text style={styles.item}>{item.id}</Text>
-                <Text style={styles.item}>{item.name}</Text>
-                <Text style={styles.item}>{item.price}</Text>
-              </View>
-            )} />
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+    </PullToRefresh>
   );
 }
 
